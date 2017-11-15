@@ -12,7 +12,7 @@
   tags: always
     
 - name: Wget the installer
-  shell:  cd /home/ec2-user && wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install && ./install auto
+  shell:  cd /home/ec2-user && wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install && chmod +x install && ./install auto
   tags: always
   
 - name: Start and enabled
