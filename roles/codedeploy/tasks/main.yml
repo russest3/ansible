@@ -4,7 +4,7 @@
 #  aws_codedeploy: 
 #    enabled: 1  
   yum:
-    name: {{ item }}
+    name: "{{ item }}"
     state: latest
   with_items:
     - ruby
