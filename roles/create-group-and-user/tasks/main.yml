@@ -1,0 +1,8 @@
+---
+- name: Create group
+  group: name="{{ group }}" state=present
+  tags: initialize
+
+- name: Create user
+  user: name="{{ user }}" group="{{ group }}" state=present
+  tags: initialize

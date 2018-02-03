@@ -1,0 +1,4 @@
+---
+dependencies:
+  - { role: java }
+  - { role: create-group-and-user, group: "{{ tomcat__user }}", user: "{{ tomcat__user }}" }

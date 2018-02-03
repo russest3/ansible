@@ -1,0 +1,6 @@
+---
+jdbc_configuration_url: "jdbc:postgresql://172.18.81.217/democonfigdb"
+jdbc_configuration_user: "postgres"
+
+jdbc_mapping_url: "jdbc:postgresql://172.18.81.217/demomapdb"
+jdbc_mapping_user: "postgres"

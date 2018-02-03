@@ -1,0 +1,6 @@
+---
+jdbc_configuration_url: "jdbc:postgresql://p10prdmirthpgsql01.sens.medfusion.net/configurationdb"
+jdbc_configuration_user: "mirth"
+
+jdbc_mapping_url: "jdbc:postgresql://p10prdmirthpgsql01.sens.medfusion.net/mappingdb"
+jdbc_mapping_user: "mirth"

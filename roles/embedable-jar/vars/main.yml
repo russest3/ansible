@@ -1,0 +1,5 @@
+---
+project_extension: jar
+
+app__host: 0.0.0.0
+test_scripts__dir: "scripts/test_deploy"

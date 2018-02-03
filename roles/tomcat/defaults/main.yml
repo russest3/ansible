@@ -1,0 +1,11 @@
+---
+project_extension: "war"
+
+tomcat__artifact_extension: "tgz"
+tomcat__dir: "{{ tomcat__dir_prefix }}/tomcat"
+tomcat__dir_prefix: "/app"
+tomcat__dir_with_version: "{{ tomcat__dir_prefix }}/apache-tomcat-{{ tomcat__version }}"
+tomcat__init_script_name: "tomcat"
+tomcat__port: 8080
+tomcat__user: "tomcat"
+tomcat__version: "8.5.4"

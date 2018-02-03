@@ -1,0 +1,8 @@
+---
+jdbc_configuration_url: "jdbc:postgresql://172.18.81.130/configurationdb"
+jdbc_configuration_user: "mirth"
+jdbc_configuration_password: "Intuit123"
+
+jdbc_mapping_url: "jdbc:postgresql://172.18.81.130/mappingdb"
+jdbc_mapping_user: "mirth"
+jdbc_mapping_password: "Intuit123"

@@ -1,0 +1,4 @@
+---
+- name: Create app dir
+  file: path="{{ app_dir }}" state=directory recurse=yes
+  tags: initialize

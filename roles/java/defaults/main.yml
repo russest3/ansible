@@ -1,0 +1,9 @@
+---
+java__major: Java8
+java__version: "1.8.0_112"
+java__cacerts: "5.0"
+java__us_export_policy: "1.0"
+java__local_policy: "1.0"
+java__jdk_local_tmp_path: "/tmp/{{ java__major }}_x86_64-{{ java__version }}"
+java__dir_prefix: "/app"
+java__dir: "{{ java__dir_prefix }}/java"

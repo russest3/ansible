@@ -1,0 +1,112 @@
+---
+- name: Download JDK
+  local_action: >
+    maven_artifact
+    group_id="software"
+    artifact_id="{{ java__major }}_x86_64"
+    version="{{ java__version }}"
+    extension="gz"
+    repository_url="{{ maven_repository_url }}"
+    dest="{{ java__jdk_local_tmp_path }}/{{ java__major }}_x86_64-{{ java__version }}.gz"
+  become: no
+  when: inventory_hostname == groups['{{ project_artifact_id }}'][0]
+  tags: initialize,jdk
+
+- name: Download US Export Policy
+  local_action: >
+    maven_artifact
+    group_id="software"
+    artifact_id="{{ java__major }}_JCE.US_export_policy"
+    version="{{ java__us_export_policy }}"
+    extension="jar"
+    repository_url="{{ maven_repository_url }}"
+    dest="{{ java__jdk_local_tmp_path }}/{{ java__major }}_JCE.US_export_policy-{{ java__us_export_policy }}.jar"
+  become: no
+  when: inventory_hostname == groups['{{ project_artifact_id }}'][0]
+  tags: initialize,jdk
+
+- name: Download Local Policy
+  local_action: >
+    maven_artifact
+    group_id="software"
+    artifact_id="{{ java__major }}_JCE.local_policy"
+    version="{{ java__local_policy }}"
+    extension="jar"
+    repository_url="{{ maven_repository_url }}"
+    dest="{{ java__jdk_local_tmp_path }}/{{ java__major }}_JCE.local_policy-{{ java__local_policy }}.jar"
+  become: no
+  when: inventory_hostname == groups['{{ project_artifact_id }}'][0]
+  tags: initialize,jdk
+
+- name: Download Cacerts
+  local_action: >
+    maven_artifact
+    group_id="software"
+    artifact_id="cacerts_medfusion"
+    version="{{ java__cacerts }}"
+    extension="bin"
+    repository_url="{{ maven_repository_url }}"
+    dest="{{ java__jdk_local_tmp_path }}/cacerts_medfusion-{{ java__cacerts }}.bin"
+  become: no
+  when: inventory_hostname == groups['{{ project_artifact_id }}'][0]
+  tags: initialize,jdk,cacerts
+
+- name: Copy JDK to server
+  copy:
+    src: "{{ java__jdk_local_tmp_path }}/{{ java__major }}_x86_64-{{ java__version }}.gz"
+    dest: "{{ java__dir_prefix }}/{{ java__major }}_x86_64-{{ java__version }}.gz"
+  tags: initialize,jdk
+
+- name: Extract JDK
+  unarchive:
+    copy: no
+    src: "{{ java__dir_prefix }}/{{ java__major }}_x86_64-{{ java__version }}.gz"
+    dest: "{{ java__dir_prefix }}"
+    creates: "{{ java__dir_prefix }}/jdk{{ java__version }}"
+    owner: root
+    group: root
+  tags: initialize,jdk
+
+- name: Copy US Export Policy
+  copy:
+    src: "{{ java__jdk_local_tmp_path }}/{{ java__major }}_JCE.US_export_policy-{{ java__us_export_policy }}.jar"
+    dest: "{{ java__dir_prefix }}/jdk{{ java__version }}/jre/lib/security/US_export_policy.jar"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  tags: initialize,jdk
+
+- name: Copy Local Policy
+  copy:
+    src: "{{ java__jdk_local_tmp_path }}/{{ java__major }}_JCE.local_policy-{{ java__local_policy }}.jar"
+    dest: "{{ java__dir_prefix }}/jdk{{ java__version }}/jre/lib/security/local_policy.jar"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  tags: initialize,jdk
+
+- name: Copy Cacerts
+  copy:
+    src: "{{ java__jdk_local_tmp_path }}/cacerts_medfusion-{{ java__cacerts }}.bin"
+    dest: "{{ java__dir_prefix }}/jdk{{ java__version }}/jre/lib/security/cacerts"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  tags: initialize,jdk,cacerts
+
+- name: Create Java symlink
+  file:
+    src: "{{ java__dir_prefix }}/jdk{{ java__version }}"
+    dest: "{{ java__dir }}"
+    state: "link"
+    force: "yes"
+  tags: initialize,jdk
+
+- name: Create Java binary symlink in /usr/bin
+  file:
+    src: "{{ java__dir }}/bin/java"
+    dest: "/usr/bin/java"
+    state: "link"
+    force: "yes"
+  tags: initialize,jdk
+

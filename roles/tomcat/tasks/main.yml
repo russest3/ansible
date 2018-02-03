@@ -1,0 +1,236 @@
+---
+#
+# Stop Tomcat if already installed
+#
+- name: Check if Tomcat init script exists
+  stat:
+    path: "/etc/init.d/{{ tomcat__init_script_name }}"
+  register: init_script_file
+  tags: always
+
+- name: Stop Tomcat service
+  service:
+    name: "{{ tomcat__init_script_name }}"
+    state: stopped
+  when: init_script_file.stat.exists
+  tags: always
+
+#
+# Initialize
+#
+- name: Create Tomcat directory
+  file:
+    path: "{{ tomcat__dir_with_version }}"
+    recurse: "yes"
+    state: "directory"
+    owner: "{{ tomcat__user }}"
+    group: "{{ tomcat__user }}"
+  tags: initialize
+
+- include: ../../common/tasks/download_maven_artifact.yml
+  vars:
+    download_group_id: "software"
+    download_artifact_id: "apache-tomcat"
+    download_project_version: "{{ tomcat__version }}"
+    download_project_version_classifier: ""
+    project_extension: "{{ tomcat__artifact_extension }}"
+    local_tmp_file: "/tmp/apache-tomcat-{{ tomcat__version }}.{{ tomcat__artifact_extension }}"
+  tags: initialize
+
+- name: Copy Tomcat to server
+  copy:
+    src: "/tmp/apache-tomcat-{{ tomcat__version }}.{{ tomcat__artifact_extension }}"
+    dest: "{{ tomcat__dir_prefix }}/apache-tomcat-{{ tomcat__version }}.{{ tomcat__artifact_extension }}"
+  tags: initialize
+
+- name: Extract Tomcat
+  unarchive:
+    copy: no
+    src: "{{ tomcat__dir_prefix }}/apache-tomcat-{{ tomcat__version }}.{{ tomcat__artifact_extension }}"
+    dest: "{{ tomcat__dir_prefix }}"
+    creates: "{{ tomcat__dir_with_version }}/bin"
+    owner: "{{ tomcat__user }}"
+    group: "{{ tomcat__user }}"
+  tags: initialize
+
+- name: Create tomcat symlink
+  file:
+    src: "{{ tomcat__dir_with_version }}"
+    dest: "{{ tomcat__dir }}"
+    owner: "{{ tomcat__user }}"
+    group: "{{ tomcat__user }}"
+    state: "link"
+    force: "yes"
+  tags: initialize
+
+#
+# Configure
+#
+- name: Copy tomcat.sh into /etc/profile.d
+  template:
+    src: "tomcat.sh"
+    dest: "/etc/profile.d/tomcat.sh"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  tags: configure,initialize
+
+- name: Copy init.d script
+  copy:
+    src: "init_d_script"
+    dest: "/etc/init.d/tomcat"
+    owner: "root"
+    group: "root"
+    mode: 0755
+  tags: configure,initialize
+
+- name: Refresh systemctl deamon list
+  shell: systemctl daemon-reload
+  when: ansible_distribution_major_version | int >= 7
+  tags: configure,initialize
+
+- name: Register init script for autostartup
+  service:
+    name: "tomcat"
+    enabled: yes
+  tags: configure,initialize
+
+- name: Get list of file folders
+  local_action: >-
+    shell
+    if [ -d "{{ role_path }}/files/{{ project_artifact_id }}" ]; then
+      find "{{ role_path }}/files/{{ project_artifact_id }}" -mindepth 1 -type d |
+      sed -e "s,{{ role_path }}/files/{{ project_artifact_id }}/,," |
+      grep -v "^tomcat$";
+      exit 0;
+    fi
+  become: no
+  changed_when: false
+  register: files_folders
+  tags: configure
+
+- name: Create file folders
+  file:
+    path: "/app/{{ item }}"
+    recurse: yes
+    follow: yes
+    state: directory
+    owner: "{{ tomcat__user }}"
+    group: "{{ tomcat__user }}"
+  with_items: "{{ files_folders.stdout_lines }}"
+  tags: configure
+
+- name: Get list of files
+  local_action: >-
+    shell
+    if [ -d "{{ role_path }}/files/{{ project_artifact_id }}" ]; then
+      find "{{ role_path }}/files/{{ project_artifact_id }}" -type f |
+      sed -e "s,{{ role_path }}/files/{{ project_artifact_id }}/,,";
+    fi
+  become: no
+  changed_when: false
+  register: files_list
+  tags: configure
+
+- name: Copy files
+  copy:
+    src: "{{ project_artifact_id }}/{{ item }}"
+    dest: "/app/{{ item }}"
+    owner: "{{ tomcat__user }}"
+    group: "{{ tomcat__user }}"
+  with_items: "{{ files_list.stdout_lines }}"
+  tags: configure
+
+- name: Get list of config folders
+  local_action: >-
+    shell
+    if [ -d "{{ role_path }}/templates/{{ project_artifact_id }}" ]; then
+      find "{{ role_path }}/templates/{{ project_artifact_id }}" -mindepth 1 -type d |
+      sed -e "s,{{ role_path }}/templates/{{ project_artifact_id }}/,," |
+      grep -v "^tomcat$";
+      exit 0;
+    fi
+  become: no
+  changed_when: false
+  register: config_files_folders
+  tags: configure
+
+- name: Create config folders
+  file:
+    path: "/app/{{ item }}"
+    recurse: yes
+    follow: yes
+    state: directory
+    owner: "{{ tomcat__user }}"
+    group: "{{ tomcat__user }}"
+  with_items: "{{ config_files_folders.stdout_lines }}"
+  tags: configure
+
+- name: Get list of config files
+  local_action: >-
+    shell
+    if [ -d "{{ role_path }}/templates/{{ project_artifact_id }}" ]; then
+      find "{{ role_path }}/templates/{{ project_artifact_id }}" -type f |
+      sed -e "s,{{ role_path }}/templates/{{ project_artifact_id }}/,,";
+    fi
+  become: no
+  changed_when: false
+  register: property_files_list
+  tags: configure
+
+- name: Copy config
+  template:
+    src: "{{ project_artifact_id }}/{{ item }}"
+    dest: "/app/{{ item }}"
+    owner: "{{ tomcat__user }}"
+    group: "{{ tomcat__user }}"
+  with_items: "{{ property_files_list.stdout_lines }}"
+  tags: configure
+
+#
+# Deploy app
+#
+- name: Get list of old artifacts to remove
+  shell: cd {{ tomcat__dir }}/webapps/; ls -d {{ project_artifact_id }}*
+  register: files_to_cleanup
+  ignore_errors: yes
+  tags: deploy
+
+- name: Remove old artifacts
+  file:
+    name: "{{ tomcat__dir }}/webapps/{{ item }}"
+    state: "absent"
+  with_items: "{{ files_to_cleanup.stdout_lines }}"
+  tags: deploy
+
+- include: ../../common/tasks/download_maven_artifact.yml
+  vars:
+    download_group_id: "{{ project_group_id }}"
+    download_artifact_id: "{{ project_artifact_id }}"
+    download_project_version: "{{ project_version }}"
+    download_project_version_classifier: ""
+
+- name: Copy artifact to server
+  copy:
+    src: "{{ local_tmp_file }}"
+    dest: "{{ tomcat__dir }}/webapps/{{ project_artifact_id }}.{{ project_extension }}"
+    owner: "{{ tomcat__user }}"
+    group: "{{ tomcat__user }}"
+    mode: 0640
+  tags: deploy
+
+#
+# Start Tomcat
+#
+- name: Start Tomcat service
+  service:
+    name: "{{ tomcat__init_script_name }}"
+    state: started
+  tags: always
+
+- name: Wait for application port to open
+  wait_for:
+    host: "0.0.0.0"
+    port: "{{ tomcat__port }}"
+    delay: 10
+  tags: always

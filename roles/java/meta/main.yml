@@ -1,0 +1,3 @@
+---
+dependencies:
+  - { role: app_dir, app_dir: "{{ java__dir_prefix }}" }

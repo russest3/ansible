@@ -1,0 +1,149 @@
+#!/bin/bash
+# chkconfig: 345 99 1
+# description: {{ project_artifact_id }} init script for {{ env }}
+
+. /etc/init.d/functions
+
+LOG_FILE={{ app__dir }}/log/{{ project_artifact_id }}.log
+SERVER_USER={{ app__user }}
+PIDFILE={{ app__dir }}/pid/{{ project_artifact_id }}.pid
+LAUNCH_GRAB_PID=/tmp/launch_grab_pid-{{ project_artifact_id }}.sh
+
+if [ ! -d {{ app__dir }}/log ]; then
+	mkdir -p {{ app__dir }}/log
+fi
+if [ ! -d {{ app__dir }}/pid ]; then
+	mkdir -p {{ app__dir }}/pid
+fi
+if [ ! -d {{ app__dir }}/jar ]; then
+	mkdir -p {{ app__dir }}/jar
+fi
+chown -R $SERVER_USER {{ app__dir }}
+
+echo '
+echo "Invoked: $*" > /tmp/launch_grab_pid-{{ project_artifact_id }}.`whoami`.log
+PIDFILE=$1
+shift
+$* &
+echo $! > $PIDFILE
+' > $LAUNCH_GRAB_PID
+chmod +x $LAUNCH_GRAB_PID
+
+function getDynPid {
+  ps auxwww | grep {{ app__dir }}/jar/{{ app__artifact_id }}.jar | grep -w java | grep -vw grep | awk '{print $2}'
+}
+
+function forceKill {
+	getDynPid | xargs kill -9
+}
+
+case "$1" in
+	start)
+		if [ -n "`getDynPid`" ]; then
+			echo "[ERROR] {{ project_artifact_id }} - {{ env }} seems to be running, please stop before starting"
+			exit 1
+		fi
+		echo "****** Starting {{ project_artifact_id }} - {{ env }} ******"
+		export JAVA_HOME={{ java__dir }}
+{% if additional_startup_exports is defined %}
+{% for exports in additional_startup_exports %}
+		export {{ exports }}
+{% endfor %}
+{% endif %}
+		CMD="${JAVA_HOME}/bin/java {% if (env != 'prod') and (app__port is defined) %}-agentlib:jdwp=transport=dt_socket,address={{ app__port + 10000 }},server=y,suspend=n {% endif %}-XX:+UseG1GC -Xmx{{ app__memory_limit }} -XX:MetaspaceSize={{ app__memory_limit }} -XX:MaxMetaspaceSize={{ app__memory_limit }} -XX:CompressedClassSpaceSize={{ app__memory_limit }} -Dapplication.properties={{ app__dir }}/application.properties -Dserver.properties={{ app__dir }}/server.properties -Dlog4j.configuration="file://{{ app__dir }}/log4j.properties" {{ app__additional_startup_properties }} {% if app__startup_class is defined %}{{ app__startup_class }}{% else %}-jar {{ app__dir }}/jar/{{ app__artifact_id }}.jar{% endif %} {{ app__additional_startup_parameters }} >> $LOG_FILE 2>&1"
+		if [ -f "$LOG_FILE" ]; then
+		  mv "$LOG_FILE" "${LOG_FILE}-`date +%Y%m%d%H%M%S`"
+                  ls -t "$LOG_FILE"* | sed -e '1,5d' | xargs -d '\n' rm -f
+		fi
+		RUNUSER=su
+		if which runuser; then
+			RUNUSER=runuser
+		elif [ -x /sbin/runuser ]; then
+			RUNUSER=/sbin/runuser
+		fi
+		echo "Invoking: $RUNUSER $SERVER_USER -c \"$LAUNCH_GRAB_PID $PIDFILE $CMD\""
+		$RUNUSER $SERVER_USER -c "$LAUNCH_GRAB_PID $PIDFILE $CMD"
+		RET=$?
+		if [ $RET -gt 0 ]; then
+		  failure
+		else
+		  success
+		fi
+		echo
+		exit $RET
+	;;
+	status)
+		echo "****** Checking {{ project_artifact_id }} - {{ env }}... ******"
+		if [ -f $PIDFILE ]; then
+			PID=`cat $PIDFILE`
+			ps $PID
+			if [ $? -eq 0 ]; then
+				echo "{{ project_artifact_id }} - {{ env }} is running"
+				exit 0
+			else
+				echo "{{ project_artifact_id }} - {{ env }} is stopped"
+				exit 1
+            fi
+        else
+            if [ -n "`getDynPid`" ]; then
+				echo "PID file missing but {{ project_artifact_id }} - {{ env }} is running"
+				exit 0
+			else
+				echo "PID file missing and {{ project_artifact_id }} - {{ env }} is stopped"
+				exit 1
+		    fi
+		fi
+	;;
+	stop)
+		echo "****** Stopping {{ project_artifact_id }} - {{ env }} ******"
+		if [ -f $PIDFILE ]; then
+			PID=`cat $PIDFILE`
+			if [ "`echo \"$PID\" | wc -w`" -eq 0 ]; then
+				echo "[ERROR] File $PIDFILE exists but is empty - check the correctness of 'start' code!"
+				failure
+				echo
+				exit 1
+			fi
+			ps $PID
+			if [ $? -eq 0 ]; then 
+				kill $PID
+				if [ $? -ne 0 ]; then
+					echo "[INFO] Server didn't die with pid, attempting to kill based on process name and port"
+					forceKill
+				fi
+			else
+				DYNPID=`getDynPid`
+				if [ ! -z "$DYNPID" ]; then
+					echo "[INFO] Discovered PID: $DYNPID holding port: $PORT and killing..."
+					kill $DYNPID
+				fi
+				echo "[INFO] Server is not running"
+			fi
+		else
+			echo "[INFO] Missing pidfile: $PIDFILE trying to kill by process name and port"
+			forceKill
+		fi
+		sleep 10
+		if [ -n "`getDynPid`" ]; then
+		  echo Forcing kill
+		  forceKill
+      sleep 10
+      if [ -n "`getDynPid`" ]; then
+        echo "{{ project_artifact_id }} - {{ env }} does not want to stop"
+        failure
+        echo
+        exit 1
+      fi
+		fi
+		success
+		echo
+	;;
+	restart)
+		$0 stop &&
+		sleep 10 &&
+		$0 start
+	;;
+	*)
+		echo "Usage: $0 {start|stop|restart|status}"
+	;;
+esac
