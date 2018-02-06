@@ -7,5 +7,4 @@
   vars_files:
     - "variables_global.yml"
     - "roles/embedable-jar/vars/{{ project_artifact_id }}/global.yml"
-    - [ "roles/embedable-jar/vars/{{ project_artifact_id }}/{{ env }}.yml", "variables_empty.yml" ]
-    - [ "roles/embedable-jar/vars/{{ project_artifact_id }}/{{ env }}-vault.yml", "variables_empty.yml" ]
+    - "roles/embedable-jar/vars/{{ project_artifact_id }}/{{ env }}.yml"

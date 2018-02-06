@@ -79,4 +79,4 @@ if [[ -f $HOME/.ansible_vault_pass.txt ]]; then
 fi
 
 set -x
-ansible-playbook -vvv --forks=1 $ANSIBLE_LOGIN_OPTS $ANSBLE_VAULT_FILE --inventory=roles/$2/environments/$1 --extra-vars="env=$1 project_group_id=$3 project_artifact_id=$4 project_version=$5" --tags=$6 ${2}.yml --limit=$4
+ansible-playbook -vvv --forks=1 $ANSIBLE_LOGIN_OPTS $ANSBLE_VAULT_FILE --inventory=$ANSIBLE_REPO/roles/$2/environments/$1 --extra-vars="env=$1 project_group_id=$3 project_artifact_id=$4 project_version=$5" --tags=$6 ${2}.yml --limit=$4
