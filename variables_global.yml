@@ -1,6 +1,4 @@
 ---
-maven_repository_url: http://<ip_of_maven_repo>:8081/artifactory
+maven_repository_url: http://10.10.63.156:8081/artifactory
 execution_uuid: "{{ project_version | to_uuid }}"
 local_tmp_file: "/tmp/{{ project_artifact_id }}-{{ project_version }}_{{ execution_uuid }}.{{ project_extension }}"
-
-test_script__type: 
