@@ -141,7 +141,7 @@
 # Deploy Application
 #
 
-- include: ../../common/tasks/download_maven_artifact.yml
+- import_tasks: ../../common/tasks/download_maven_artifact.yml
   vars:
     download_group_id: "{{ project_group_id }}"
     download_artifact_id: "{{ app__artifact_id }}"
@@ -157,7 +157,7 @@
     mode: "0644"
   tags: deploy
 
-- include: ../../common/tasks/download_maven_artifact.yml
+- import_tasks: ../../common/tasks/download_maven_artifact.yml
   vars:
     download_group_id: "{{ item.group_id }}"
     download_artifact_id: "{{ item.artifact_id }}"
