@@ -101,7 +101,7 @@
 # Copy configuration files
 - name: Get list of property files to copy
   local_action: shell if [ -d "{{ role_path }}/templates/{{ project_artifact_id }}/{{ env }}" ]; then ls "{{ role_path }}/templates/{{ project_artifact_id }}/{{ env }}"; fi
-  become: no
+#  become: no
   changed_when: false
   register: property_files_list
   tags: configure
