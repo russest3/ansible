@@ -123,7 +123,7 @@
 
 - name: Check if test script exists
   local_action: stat path="{{ role_path }}/templates/{{ test_scripts__dir }}/{{ test_script__type }}.sh"
-  become: no
+#  become: no
   register: tsf
   tags: configure
 
