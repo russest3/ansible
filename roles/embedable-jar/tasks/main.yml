@@ -95,22 +95,6 @@
   when: (app__port is defined) and (app__context_path is defined)
   tags: configure
 
-- name: Check if test script exists
-  local_action: stat path="{{ role_path }}/templates/{{ test_scripts__dir }}/{{ test_script__type }}.sh"
-#  become: no
-  register: tsf
-  tags: configure
-
-- name: Create scripts directory
-  file: path="{{ app__dir }}/scripts" state=directory recurse=yes owner="{{ app__user }}" group="{{ app__group }}"
-  when: tsf.stat.exists == true
-  tags: configure
-
-- name: Copy test script if exists
-  template: src="{{ test_scripts__dir }}/{{ test_script__type }}.sh" dest="{{ app__dir }}/scripts/test_deploy.sh" owner="{{ app__user }}" group="{{ app__group }}" mode=0755
-  when: tsf.stat.exists == true
-  tags: configure
-
 #
 # Deploy Application
 #
