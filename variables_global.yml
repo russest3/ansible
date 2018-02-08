@@ -1,4 +1,4 @@
 ---
-maven_repository_url: http://10.10.63.156:8081/artifactory/ext-snapshot-local
+maven_repository_url: http://10.10.63.156:8081/artifactory/ext-release-local
 execution_uuid: "{{ project_version | to_uuid }}"
 local_tmp_file: "/var/lib/jenkins/tmp"
