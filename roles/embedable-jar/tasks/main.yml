@@ -1,28 +1,5 @@
 ---
 
-# Chcek if new "{{ app__init_script_name }}" or old "{{ app__init_script_name }}.sh" exists
-- name: Check if init script exists
-  stat: path="/etc/init.d/{{ app__init_script_name }}"
-  register: init_script_file
-  tags: always
-
-- name: Check if old init script name exists
-  stat: path="/etc/init.d/{{ app__init_script_name }}.sh"
-  register: init_script_file_sh
-  when: init_script_file.stat.exists == false
-  tags: always
-
-- name: Set app__init_script_name to old init script name
-  set_fact:
-    app__init_script_name: "{{ app__init_script_name }}.sh"
-  when: init_script_file_sh is defined and init_script_file_sh.stat.exists == true
-  tags: always
-
-- name: Stop service
-  command: /etc/init.d/{{ app__init_script_name }} stop
-  when: init_script_file.stat.exists == true or (init_script_file_sh is defined and init_script_file_sh.stat.exists == true)
-  tags: always
-
 #
 # Initialize
 #
