@@ -4,3 +4,4 @@ app__context_path: "/helloworld"
 app__splunk_index_name: "helloworld"
 app__healthstatus_actuator: true
 app__additional_startup_properties: "-Dspring.config.location={{ app__dir }}/"
+java__dir: "/app/jdk-9.0.4"
