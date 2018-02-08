@@ -1,5 +1,5 @@
 ---
-app__port: 8080
+app__port: 8100
 app__context_path: "/helloworld"
 app__splunk_index_name: "helloworld"
 app__healthstatus_actuator: true
