@@ -39,6 +39,7 @@
   template:
     src: init_script.j2
     dest: "/etc/init.d/{{ app__init_script_name }}"
+    mode: 0764
   tags: configure
 
 #- name: Refresh systemctl daemon list
