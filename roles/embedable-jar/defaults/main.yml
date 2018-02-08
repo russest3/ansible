@@ -4,11 +4,11 @@ app__additional_startup_parameters: "" # parameters for app itself
 app__artifact_id: "{{ project_artifact_id }}"
 app__artifact_version_classifier: ""
 app__dir: "/app/{{ project_artifact_id }}_{{ env }}"
-app__group: "app_user"
+app__group: "root"
 app__healthstatus_actuator: false
 app__init_script_name: "{{ project_artifact_id }}-init-{{ env }}"
 app__memory_limit: "128m"
-app__user: "app_user"
+app__user: "ec2-user"
 
 additional_startup_exports:
   - "JASYPT_ENCRYPTOR_PASSWORD={% if jasypt_encryptor_password is defined %}{{ jasypt_encryptor_password }}{% endif %}"
