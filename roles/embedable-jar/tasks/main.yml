@@ -145,11 +145,11 @@
 
 - name: Wait for application port to open
   wait_for:
-    host: "{{ app__host }}"
-    port: "{{ app__port }}"
+#    host: "{{ app__host }}"
+#    port: "{{ app__port }}"
     delay: 10
     timeout: 120
-  when: app__port is defined
+#  when: app__port is defined
   tags: always
 
 - name: Check that application is up
@@ -157,11 +157,6 @@
   when: (app__context_path is defined) and ({{ app__context_path | length }} > 0)
   changed_when: false
   register: curl_result
-  tags: always
-
-- name: Check that application healthstatus does not contain errors
-  fail: msg="Healthstatus contains errors"
-  when: "curl_result is defined and ('ERROR' in curl_result.stderr or 'ERROR' in curl_result.stdout)"
   tags: always
 
 #
