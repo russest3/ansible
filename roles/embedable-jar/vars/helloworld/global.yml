@@ -1,1 +1,4 @@
 ---
+java__dir: "/usr/java/latest"
+java__major: Java9
+java__version: "1.9.0_4"
