@@ -48,9 +48,9 @@
 
 # TODO enable root to run init script in selinux
 - name: Register init script for autostartup
-  service:
-    name: "{{ app__init_script_name }}"
-    enabled: yes
+  command: "sudo chkconfig helloworld-init-dev on"
+#    name: "{{ app__init_script_name }}"
+#    enabled: yes
   tags: configure
 
 # Get list of static files to copy
