@@ -80,10 +80,10 @@ fi
 
 # Set Maven Repository URL
 if [ $(( ${#5})) -gt 5 ]; then
-	export maven_repository_url="http://10.10.63.156:8081/artifactory/ext-snapshot-local/"
+	maven_repository_url="http://10.10.63.156:8081/artifactory/ext-snapshot-local/"
 else
-	export maven_repository_url="http://10.10.63.156:8081/artifactory/ext-release-local/"
+	maven_repository_url="http://10.10.63.156:8081/artifactory/ext-release-local/"
 fi
 
 set -x
-ansible-playbook -vvv --forks=1 $ANSIBLE_LOGIN_OPTS $ANSBLE_VAULT_FILE --inventory=$ANSIBLE_REPO/roles/$2/environments/$1 --extra-vars="env=$1 project_group_id=$3 project_artifact_id=$4 project_version=$5" --tags=$6 ${2}.yml --limit=$4
+ansible-playbook -vvv --forks=1 $ANSIBLE_LOGIN_OPTS $ANSBLE_VAULT_FILE --inventory=$ANSIBLE_REPO/roles/$2/environments/$1 --extra-vars="maven_repository_url=$maven_repository_url env=$1 project_group_id=$3 project_artifact_id=$4 project_version=$5" --tags=$6 ${2}.yml --limit=$4
