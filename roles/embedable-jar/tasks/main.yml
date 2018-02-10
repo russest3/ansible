@@ -186,7 +186,6 @@
       initial_position = start_of_file
       log_group_name = {{ app__dir }}/logs/{{ app__artifact_id }}.log
     mode: 0664
-    group: jenkins
   tags: always
 
 - name: Restart awslogs
