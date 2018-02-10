@@ -174,9 +174,9 @@
   changed_when: false
   tags: always
 
-- name: Add logging config to awslogs.config
+- name: Add logging config to awslogs.conf
   blockinfile:
-    path: /etc/awslogs/awslogs.config
+    path: /etc/awslogs/awslogs.conf
     block: |
       [{{ app__dir }}/logs/{{ app__artifact_id }}.log]
       datetime_format = %b %d %H:%M:%S
