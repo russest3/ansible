@@ -185,7 +185,7 @@
       log_stream_name = {instance_id}
       initial_position = start_of_file
       log_group_name = {{ app__dir }}/logs/{{ app__artifact_id }}.log
-    mode: 0664
+    mode: 0666
   tags: always
 
 - name: Restart awslogs
