@@ -70,7 +70,8 @@ fi
 # Use default login options for running from developers local machine
 # Automatic deployment scripts should export this variable when calling this script pass proper SSH key
 if [[ -z "$ANSIBLE_LOGIN_OPTS" ]]; then
-	ANSIBLE_LOGIN_OPTS="-k -u `id -un` -s -K"
+#	ANSIBLE_LOGIN_OPTS="-k -u `id -un` -s -K"
+	ANSIBLE_LOGIN_OPTS="-u `id -un` -s"
 fi
 
 ANSBLE_VAULT_FILE=""
