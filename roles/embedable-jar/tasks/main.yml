@@ -3,18 +3,18 @@
 #
 # Initialize
 #
-
-- name: Create app dir
-  file: path="{{ app__dir }}/jar" state=directory recurse=yes
-  tags: initialize
+#
+#- name: Create app dir
+#  file: path="{{ app__dir }}/jar" state=directory recurse=yes
+#  tags: initialize
 
 - name: Create log dir
   file: path="{{ app__dir }}/log" state=directory recurse=yes
   tags: initialize
 
-- name: Setup app directory permissions
-  file: path="{{ app__dir }}" state=directory recurse=yes owner="{{ app__user }}" group="{{ app__group }}"
-  tags: initialize
+#- name: Setup app directory permissions
+#  file: path="{{ app__dir }}" state=directory recurse=yes owner="{{ app__user }}" group="{{ app__group }}"
+#  tags: initialize
 
 #
 # Configuration
