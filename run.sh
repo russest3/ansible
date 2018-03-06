@@ -71,7 +71,7 @@ fi
 # Automatic deployment scripts should export this variable when calling this script pass proper SSH key
 if [[ -z "$ANSIBLE_LOGIN_OPTS" ]]; then
 #	ANSIBLE_LOGIN_OPTS="-k -u `id -un` -s -K"
-	ANSIBLE_LOGIN_OPTS="-k -u ec2-user -s -K"
+	ANSIBLE_LOGIN_OPTS="-k -u jenkins -s -K"
 fi
 
 ANSBLE_VAULT_FILE=""
@@ -81,9 +81,9 @@ fi
 
 # Set Maven Repository URL
 if [ $(( ${#5})) -gt 5 ]; then
-	maven_repository_url="http://10.10.63.156:8081/artifactory/ext-snapshot-local/"
+	maven_repository_url="http://10.0.1.11:8081/artifactory/snapshots/"
 else
-	maven_repository_url="http://10.10.63.156:8081/artifactory/ext-release-local/"
+	maven_repository_url="http://10.0.1.11:8081/artifactory/releases/"
 fi
 
 set -x
