@@ -107,6 +107,15 @@
     download_project_version: "{{ project_version }}"
     download_project_version_classifier: "{{ app__artifact_version_classifier }}"
 
+- name: Create jar directory
+  file:
+    path: "{{ app__dir }}/jar"
+    state: directory
+    mode: 0644
+    owner: jenkins
+    group: jenkins
+  tags: always
+
 - name: Deploy jar to server
   copy:
     src: "{{ local_tmp_file }}"
