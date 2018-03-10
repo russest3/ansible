@@ -56,14 +56,14 @@ case "$1" in
 		  mv "$LOG_FILE" "${LOG_FILE}-`date +%Y%m%d%H%M%S`"
                   ls -t "$LOG_FILE"* | sed -e '1,5d' | xargs -d '\n' rm -f
 		fi
-#		RUNUSER=su
+		RUNUSER=jenkins
 #		if which runuser; then
 #			RUNUSER=runuser
 #		elif [ -x /sbin/runuser ]; then
 #			RUNUSER=/sbin/runuser
 #		fi
 		echo "Invoking: $RUNUSER $SERVER_USER -c \"$LAUNCH_GRAB_PID $PIDFILE $CMD\""
-#		$RUNUSER $SERVER_USER -c "$LAUNCH_GRAB_PID $PIDFILE $CMD"
+		$RUNUSER $SERVER_USER -c "$LAUNCH_GRAB_PID $PIDFILE $CMD"
 		/bin/bash -c "$LAUNCH_GRAB_PID $PIDFILE $CMD"
 		RET=$?
 		if [ $RET -gt 0 ]; then
