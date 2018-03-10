@@ -111,7 +111,7 @@
   file:
     path: "{{ app__dir }}/jar"
     state: directory
-    mode: 0644
+    mode: 0744
     owner: jenkins
     group: jenkins
   tags: always
