@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source $JENKINS_HOME/jobs/$PROMOTED_JOB_NAME/builds/$PROMOTED_NUMBER/archive/maven_info.txt
+
 cd `dirname $0`
 
 projectTypes=(`ls -1 *.yml | grep -v variables_global.yml | sed -e 's/.yml$//'`)
