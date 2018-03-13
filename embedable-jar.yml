@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: "{{ project_artifact_id }}"
   roles:
     - embedable-jar
   serial: 1
