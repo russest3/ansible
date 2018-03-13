@@ -87,7 +87,7 @@
     dest: "{{ app__dir }}/{{ item }}" 
     owner: "{{ app__user }}" 
     group: "{{ app__group }}" 
-    mode: 0644
+    mode: 0664
   with_items: "{{ property_files_list.stdout_lines }}"
   tags: configure
 
@@ -183,23 +183,23 @@
   changed_when: false
   tags: always
 
-- name: Add logging config to awslogs.conf
-  blockinfile:
-    path: /etc/awslogs/awslogs.conf
-    block: |
-      [{{ app__dir }}/log/{{ app__artifact_id }}.log]
-      datetime_format = %b %d %H:%M:%S
-      file = {{ app__dir }}/log/{{ app__artifact_id }}.log
-      buffer_duration = 5000
-      log_stream_name = {instance_id}
-      initial_position = start_of_file
-      log_group_name = {{ app__dir }}/log/{{ app__artifact_id }}.log
-    mode: 0666
-  tags: always
+#- name: Add logging config to awslogs.conf
+#  blockinfile:
+#    path: /etc/awslogs/awslogs.conf
+#    block: |
+#      [{{ app__dir }}/log/{{ app__artifact_id }}.log]
+#      datetime_format = %b %d %H:%M:%S
+#      file = {{ app__dir }}/log/{{ app__artifact_id }}.log
+#      buffer_duration = 5000
+#      log_stream_name = {instance_id}
+#      initial_position = start_of_file
+#      log_group_name = {{ app__dir }}/log/{{ app__artifact_id }}.log
+#    mode: 0666
+#  tags: always
 
-- name: Restart awslogs
-  service:
-    name: awslogs
-    state: restarted
-  tags: always
+#- name: Restart awslogs
+#  service:
+#    name: awslogs
+#    state: restarted
+#  tags: always
 
