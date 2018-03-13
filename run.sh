@@ -83,9 +83,9 @@ fi
 
 # Set Maven Repository URL
 if [ $(( ${#5})) -gt 5 ]; then
-	maven_repository_url="http://10.0.1.11:8081/artifactory/snapshots/"
+	maven_repository_url="http://10.0.1.20:8081/artifactory/snapshots/"
 else
-	maven_repository_url="http://10.0.1.11:8081/artifactory/releases/"
+	maven_repository_url="http://10.0.1.20:8081/artifactory/releases/"
 fi
 
 set -x
