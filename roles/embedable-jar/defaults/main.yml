@@ -9,6 +9,11 @@ app__healthstatus_actuator: false
 app__init_script_name: "{{ project_artifact_id }}-init-{{ env }}"
 app__memory_limit: "128m"
 app__user: "jenkins"
+download_group_id: "{{ project_group_id }}"
+download_artifact_id: "{{ app__artifact_id }}"
+download_project_version: "{{ project_version }}"
+download_project_version_classifier: "{{ app__artifact_version_classifier }}"
+
 
 additional_startup_exports:
   - "JASYPT_ENCRYPTOR_PASSWORD={% if jasypt_encryptor_password is defined %}{{ jasypt_encryptor_password }}{% endif %}"
