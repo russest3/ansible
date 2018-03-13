@@ -100,7 +100,25 @@
 # Deploy Application
 #
 
-- include_tasks: "../../common/tasks/download_maven_artifact.yml"
+- name: Remove local artifact if exists
+  local_action: file dest="{{ local_tmp_file }}" state=absent
+#  become: no
+  when: inventory_hostname == groups['{{ project_artifact_id }}'][0]
+  tags: deploy
+  
+- name: Download artifact
+  local_action: >
+    maven_artifact
+    group_id="{{ download_group_id }}"
+    artifact_id="{{ download_artifact_id }}"
+    version="{{ download_project_version }}"
+    classifier="{{ download_project_version_classifier }}"
+    extension="{{ project_extension }}"
+    repository_url="{{ maven_repository_url }}"
+    dest="{{ local_tmp_file }}"
+#  become: no
+  when: inventory_hostname == groups['{{ project_artifact_id }}'][0]
+  tags: deploy
 
 - name: Create jar directory
   file:
