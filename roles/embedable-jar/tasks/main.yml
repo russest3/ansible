@@ -42,10 +42,10 @@
     mode: 0764
   tags: configure
 
-#- name: Refresh systemctl daemon list
-#  shell: systemctl daemon-reload
-#  when: ansible_distribution_major_version | int >= 7
-#  tags: configure
+- name: Refresh systemctl daemon list
+  shell: systemctl daemon-reload
+  when: ansible_distribution_major_version | int >= 7
+  tags: configure
 
 # TODO enable root to run init script in selinux
 - name: Register init script for autostartup
