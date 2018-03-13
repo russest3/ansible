@@ -1,7 +1,7 @@
 ---
 - name: Remove local artifact if exists
   local_action: file dest="{{ local_tmp_file }}" state=absent
-  become: no
+#  become: no
   when: inventory_hostname == groups['{{ project_artifact_id }}'][0]
   tags: deploy
   
@@ -15,6 +15,6 @@
     extension="{{ project_extension }}"
     repository_url="{{ maven_repository_url }}"
     dest="{{ local_tmp_file }}"
-  become: no
+#  become: no
   when: inventory_hostname == groups['{{ project_artifact_id }}'][0]
   tags: deploy
