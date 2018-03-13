@@ -1,1 +1,5 @@
 ---
+download_group_id: "{{ project_group_id }}"
+download_artifact_id: "{{ app__artifact_id }}"
+download_project_version: "{{ project_version }}"
+download_project_version_classifier: "{{ app__artifact_version_classifier }}"
