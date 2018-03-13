@@ -120,15 +120,15 @@
     mode: "0644"
   tags: deploy
 
-- include_tasks: ../../common/tasks/download_maven_artifact.yml
-  vars:
-    download_group_id: "{{ item.group_id }}"
-    download_artifact_id: "{{ item.artifact_id }}"
-    download_project_version: "{{ item.version }}"
-    download_project_version_classifier: "{{ item.classifier }}"
-    local_tmp_file: "/tmp/{{ item.artifact_id }}-{{ item.version }}-{{ item.classifier }}_{{ execution_uuid }}.{{ project_extension }}"
-  when: "additional_artifacts is defined"
-  with_items: "{{ additional_artifacts }}"
+#- include_tasks: ../../common/tasks/download_maven_artifact.yml
+#  vars:
+#    download_group_id: "{{ item.group_id }}"
+#    download_artifact_id: "{{ item.artifact_id }}"
+#    download_project_version: "{{ item.version }}"
+#    download_project_version_classifier: "{{ item.classifier }}"
+#    local_tmp_file: "/tmp/{{ item.artifact_id }}-{{ item.version }}-{{ item.classifier }}_{{ execution_uuid }}.{{ project_extension }}"
+#  when: "additional_artifacts is defined"
+#  with_items: "{{ additional_artifacts }}"
 
 - name: Deploy additional jars to server
   copy:
