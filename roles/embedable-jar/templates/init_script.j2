@@ -56,7 +56,7 @@ case "$1" in
 		  mv "$LOG_FILE" "${LOG_FILE}-`date +%Y%m%d%H%M%S`"
                   ls -t "$LOG_FILE"* | sed -e '1,5d' | xargs -d '\n' rm -f
 		fi
-		RUNUSER=jenkins
+		RUNUSER=/sbin/runuser
 #		if which runuser; then
 #			RUNUSER=runuser
 #		elif [ -x /sbin/runuser ]; then
