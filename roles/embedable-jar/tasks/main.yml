@@ -165,8 +165,8 @@
 # Run always on end
 #
 - name: Start service
-  service: name="{{ app__init_script_name }}" state=started enabled=yes
-#  shell: systemctl start {{ app__init_script_name }}
+#  service: name="{{ app__init_script_name }}" state=started enabled=yes
+  shell: service {{ app__init_script_name }} start
   tags: always
 
 #- name: Wait for application port to open
