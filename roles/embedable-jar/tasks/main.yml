@@ -62,8 +62,7 @@
     shell if [ -d '{{ role_path }}/files/{{ project_artifact_id }}/{{ env }}' ]; then 
     ls '{{ role_path }}/files/{{ project_artifact_id }}/{{ env }}'; 
     fi
-  become: no
-  sudo: no
+  become_user: jenkins
   changed_when: false
   register: static_files_list
   tags: configure
@@ -80,15 +79,15 @@
 
 
 # Copy configuration files
-#- name: Get list of property files to copy
-#  local_action: >
-#    shell if [ -d "{{ role_path }}/templates/{{ project_artifact_id }}/{{ env }}" ]; then
-#    ls "{{ role_path }}/templates/{{ project_artifact_id }}/{{ env }}";
-#    fi
-#  become: no
-#  changed_when: false
-#  register: property_files_list
-#  tags: configure
+- name: Get list of property files to copy
+  local_action: >
+    shell if [ -d "{{ role_path }}/templates/{{ project_artifact_id }}/{{ env }}" ]; then
+    ls "{{ role_path }}/templates/{{ project_artifact_id }}/{{ env }}";
+    fi
+  changed_when: false
+  become_user: jenkins
+  register: property_files_list
+  tags: configure
 
 - name: Copy property files
   template: 
@@ -116,18 +115,18 @@
   tags: deploy
   
 #- name: Download artifact
-#  local_action: >
-#    maven_artifact
-#    group_id="{{ download_group_id }}"
-#    artifact_id="{{ download_artifact_id }}"
-#    version="{{ download_project_version }}"
-#    classifier="{{ download_project_version_classifier }}"
-#    extension="{{ project_extension }}"
-#    repository_url="{{ maven_repository_url }}"
-#    dest="{{ local_tmp_file }}"
-#  become: no
-#  when: inventory_hostname == groups['{{ project_artifact_id }}'][0]
-#  tags: deploy
+  local_action: >
+    maven_artifact
+    group_id="{{ download_group_id }}"
+    artifact_id="{{ download_artifact_id }}"
+    version="{{ download_project_version }}"
+    classifier="{{ download_project_version_classifier }}"
+    extension="{{ project_extension }}"
+    repository_url="{{ maven_repository_url }}"
+    dest="{{ local_tmp_file }}"
+  become_user: jenkins 
+  when: inventory_hostname == groups['{{ project_artifact_id }}'][0]
+  tags: deploy
 
 - name: Create jar directory
   file:
