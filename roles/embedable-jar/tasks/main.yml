@@ -58,8 +58,12 @@
 
 # Get list of static files to copy
 - name: Get list of static files to copy
-  local_action: "/bin/bash -c  'if [ -d '{{ role_path }}/files/{{ project_artifact_id }}/{{ env }}' ]; then ls '{{ role_path }}/files/{{ project_artifact_id }}/{{ env }}';fi'"
+  local_action: >
+    shell if [ -d '{{ role_path }}/files/{{ project_artifact_id }}/{{ env }}' ]; then 
+    ls '{{ role_path }}/files/{{ project_artifact_id }}/{{ env }}'; 
+    fi
   become: no
+  sudo: no
   changed_when: false
   register: static_files_list
   tags: configure
