@@ -51,15 +51,18 @@
 
 # TODO enable root to run init script in selinux
 - name: Register init script for autostartup
-  command: "sudo chkconfig helloworld-init-dev on"
+  command: "chkconfig helloworld-init-dev on"
 #    name: "{{ app__init_script_name }}"
 #    enabled: yes
   tags: configure
 
 # Get list of static files to copy
 - name: Get list of static files to copy
-  local_action: shell if [ -d "{{ role_path }}/files/{{ project_artifact_id }}/{{ env }}" ]; then ls "{{ role_path }}/files/{{ project_artifact_id }}/{{ env }}"; fi
-  become: false
+  local_action: >
+    shell if [ -d "{{ role_path }}/files/{{ project_artifact_id }}/{{ env }}" ]; then
+    ls "{{ role_path }}/files/{{ project_artifact_id }}/{{ env }}";
+    fi
+  become: no
   changed_when: false
   register: static_files_list
   tags: configure
@@ -77,8 +80,11 @@
 
 # Copy configuration files
 - name: Get list of property files to copy
-  local_action: shell if [ -d "{{ role_path }}/templates/{{ project_artifact_id }}/{{ env }}" ]; then ls "{{ role_path }}/templates/{{ project_artifact_id }}/{{ env }}"; fi
-  become: false
+  local_action: >
+    shell if [ -d "{{ role_path }}/templates/{{ project_artifact_id }}/{{ env }}" ]; then
+    ls "{{ role_path }}/templates/{{ project_artifact_id }}/{{ env }}";
+    fi
+  become: no
   changed_when: false
   register: property_files_list
   tags: configure
